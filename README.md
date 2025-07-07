@@ -12,7 +12,6 @@ API REST para la gestión de fondos de inversión de BTG Pactual, permitiendo a 
 - **Lombok**
 - **Maven**
 - **Spring Boot Mail** (para notificaciones por email)
-- **Twilio** (para notificaciones SMS)
 
 ## 🔒 Seguridad: Autenticación, Autorización, Roles y Encriptación
 
@@ -57,12 +56,10 @@ API REST para la gestión de fondos de inversión de BTG Pactual, permitiendo a 
 - Maven 3.6+
 - MongoDB 4.4+ (instalado y ejecutándose en localhost:27017)
 - Cuenta de Gmail (para notificaciones por email)
-- Cuenta de Twilio (para notificaciones SMS)
 
 ### 1. Clonar y configurar
 ```bash
-git clone <repository-url>
-cd bruebaBacken
+git clone https://github.com/JuanCarlosGuti/Prueba-backend-SETI
 ```
 
 ### 2. Configurar MongoDB
@@ -82,13 +79,6 @@ Edita `src/main/resources/application.properties`:
 ```properties
 spring.mail.username=tu-email@gmail.com
 spring.mail.password=tu-app-password
-```
-
-#### Para SMS (Twilio):
-```properties
-twilio.account.sid=tu-account-sid
-twilio.auth.token=tu-auth-token
-twilio.phone.number=+1234567890
 ```
 
 ### 4. Ejecutar la aplicación
@@ -135,58 +125,14 @@ Al iniciar la aplicación, se crean automáticamente los siguientes fondos:
 - **GET** `/api/fondos/transacciones/{clienteId}` - Ver historial de transacciones
 
 ### Notificaciones
-- **POST** `/api/notificaciones/test` - Probar notificación
+- **POST** `/api/notificaciones/test` - Probar notificación por email
 - **GET** `/api/notificaciones/status` - Estado del sistema de notificaciones
 
 ## 📧 Sistema de Notificaciones
 
-### Características
-- ✅ **Notificaciones automáticas** al suscribirse/cancelar fondos
-- ✅ **Soporte para Email** (Gmail SMTP)
-- ✅ **Soporte para SMS** (Twilio)
-- ✅ **Preferencia del cliente** (EMAIL o SMS)
-- ✅ **Fallback automático** si un método falla
-- ✅ **Configuración flexible** (habilitar/deshabilitar)
-
-### Configuración de Email
-1. **Habilitar 2FA** en tu cuenta de Gmail
-2. **Generar contraseña de aplicación**:
-   - Ve a Configuración de Google Account
-   - Seguridad → Verificación en 2 pasos
-   - Contraseñas de aplicación → Generar
-3. **Configurar en application.properties**:
-   ```properties
-   spring.mail.username=tu-email@gmail.com
-   spring.mail.password=tu-app-password
-   ```
-
-### Configuración de SMS (Twilio)
-1. **Crear cuenta en Twilio** (https://www.twilio.com)
-2. **Obtener credenciales**:
-   - Account SID
-   - Auth Token
-   - Número de teléfono
-3. **Configurar en application.properties**:
-   ```properties
-   twilio.account.sid=tu-account-sid
-   twilio.auth.token=tu-auth-token
-   twilio.phone.number=+1234567890
-   ```
-
-### Probar Notificaciones
-```bash
-# Probar notificación por email
-curl -X POST "http://localhost:8080/api/notificaciones/test" \
-  -d "email=tu-email@gmail.com" \
-  -d "telefono=+573001234567" \
-  -d "preferencia=EMAIL"
-
-# Probar notificación por SMS
-curl -X POST "http://localhost:8080/api/notificaciones/test" \
-  -d "email=tu-email@gmail.com" \
-  -d "telefono=+573001234567" \
-  -d "preferencia=SMS"
-```
+- Notificaciones automáticas al suscribirse/cancelar fondos
+- Solo por email (Gmail SMTP)
+- Preferencia del cliente: EMAIL
 
 ## 📝 Ejemplos de Uso
 
@@ -237,7 +183,7 @@ curl -X POST "http://localhost:8080/api/notificaciones/test" \
 
 ### Servicios
 - **ServicoFondo**: Lógica de negocio para gestión de fondos
-- **NotificacionService**: Sistema de notificaciones por email y SMS
+- **NotificacionService**: Sistema de notificaciones por email
 - **DataInitializer**: Inicialización de datos de prueba
 
 ### Repositorios
@@ -288,9 +234,6 @@ export SPRING_DATA_MONGODB_PORT=27017
 export SPRING_DATA_MONGODB_DATABASE=btg_fondos
 export SPRING_MAIL_USERNAME=your-email@gmail.com
 export SPRING_MAIL_PASSWORD=your-app-password
-export TWILIO_ACCOUNT_SID=your-account-sid
-export TWILIO_AUTH_TOKEN=your-auth-token
-export TWILIO_PHONE_NUMBER=+1234567890
 ```
 
 ## 🤝 Contribución
@@ -313,5 +256,4 @@ Este proyecto está bajo la Licencia MIT - ver el archivo [LICENSE](LICENSE) par
 
 - Spring Boot Team
 - MongoDB Team
-- Twilio Team
 - Comunidad de desarrolladores Java 

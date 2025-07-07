@@ -346,4 +346,7 @@ Este proyecto está bajo la Licencia MIT - ver el archivo [LICENSE](LICENSE) par
   ```
 - Comenta/descomenta según el entorno donde despliegues.
 
+![img.png](img.png)
+![img_1.png](img_1.png)
+![img_2.png](img_2.png)
 --- 

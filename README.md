@@ -291,3 +291,59 @@ Este proyecto está bajo la Licencia MIT - ver el archivo [LICENSE](LICENSE) par
 - Spring Boot Team
 - MongoDB Team
 - Comunidad de desarrolladores Java 
+
+## ☁️ Despliegue en AWS (EC2 + CloudFormation)
+
+### 1. Despliegue automático con CloudFormation
+
+- Se provee una plantilla YAML (`cloudformation-backend.yaml`) para crear automáticamente:
+  - Instancia EC2 (Amazon Linux 2023)
+  - Grupo de seguridad (puertos 8080 y 22)
+  - Descarga y ejecución del JAR desde S3
+
+#### **Pasos básicos:**
+1. Sube tu JAR a un bucket S3.
+2. Entra a AWS CloudFormation y crea una pila usando la plantilla YAML.
+3. Elige una AMI compatible (ejemplo: Amazon Linux 2023 x86_64) y tipo de instancia (ejemplo: t3.micro).
+4. Selecciona tu par de llaves SSH para acceso remoto.
+5. Espera a que la pila termine con estado `CREATE_COMPLETE`.
+6. Obtén la IP pública de la instancia desde la pestaña "Salidas" de CloudFormation.
+
+### 2. Acceso y configuración de MongoDB en EC2
+
+- Conéctate por SSH a la instancia:
+  ```sh
+  ssh -i /ruta/a/tu/btg-backend-key.pem ec2-user@<IP_PUBLICA>
+  ```
+- Instala Docker y levanta MongoDB:
+  ```sh
+  sudo yum update -y
+  sudo yum install -y docker
+  sudo systemctl start docker
+  sudo systemctl enable docker
+  sudo usermod -aG docker ec2-user
+  newgrp docker
+  docker run -d --name mongodb -p 27017:27017 -e MONGO_INITDB_ROOT_USERNAME=admin -e MONGO_INITDB_ROOT_PASSWORD=admin mongo:6.0
+  docker ps
+  ```
+- MongoDB quedará escuchando en el puerto 27017 con usuario y contraseña `admin`/`admin`.
+
+### 3. Alternar configuración en `application.properties`
+
+- **Para desarrollo local (sin autenticación):**
+  ```properties
+  spring.data.mongodb.host=localhost
+  spring.data.mongodb.port=27017
+  spring.data.mongodb.database=btg_fondos
+  #spring.data.mongodb.uri=mongodb://admin:admin@localhost:27017/btg_fondos?authSource=admin
+  ```
+- **Para AWS/EC2/Docker (con autenticación):**
+  ```properties
+  #spring.data.mongodb.host=localhost
+  #spring.data.mongodb.port=27017
+  #spring.data.mongodb.database=btg_fondos
+  spring.data.mongodb.uri=mongodb://admin:admin@localhost:27017/btg_fondos?authSource=admin
+  ```
+- Comenta/descomenta según el entorno donde despliegues.
+
+--- 

@@ -1,0 +1,40 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: Infraestructura básica para desplegar el backend de BTG Pactual en EC2
+
+Parameters:
+  KeyName:
+    Description: Nombre del par de llaves SSH para acceder a la instancia EC2
+    Type: AWS::EC2::KeyPair::KeyName
+
+Resources:
+  BackendSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: Permitir trafico HTTP para backend Spring Boot
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 8080
+          ToPort: 8080
+          CidrIp: 0.0.0.0/0
+
+  BackendInstance:
+    Type: AWS::EC2::Instance
+    Properties:
+      InstanceType: t2.micro
+      KeyName: !Ref KeyName
+      ImageId: ami-06971c49acd687c30
+      SecurityGroupIds:
+        - !Ref BackendSecurityGroup
+      UserData:
+        Fn::Base64: !Sub |
+          #!/bin/bash
+          yum update -y
+          yum install -y java-17-amazon-corretto
+          cd /home/ec2-user
+          aws s3 cp s3://btg-buckend-juan-2025/bruebaBacken-0.0.1-SNAPSHOT.jar app.jar
+          nohup java -jar app.jar > app.log 2>&1 &
+
+Outputs:
+  InstancePublicIp:
+    Description: IP pública de la instancia EC2
+    Value: !GetAtt BackendInstance.PublicIp 

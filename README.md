@@ -57,6 +57,40 @@ API REST para la gestión de fondos de inversión de BTG Pactual, permitiendo a 
 - MongoDB 4.4+ (instalado y ejecutándose en localhost:27017)
 - Cuenta de Gmail (para notificaciones por email)
 
+---
+
+### ⚡️ Uso rápido de MongoDB con Docker en Amazon Linux 2023
+
+Si usas Amazon Linux 2023 en EC2 y tienes problemas instalando MongoDB, puedes levantarlo fácilmente con Docker:
+
+1. Instala Docker:
+   ```sh
+   sudo yum update -y
+   sudo yum install -y docker
+   sudo systemctl start docker
+   sudo systemctl enable docker
+   sudo usermod -aG docker ec2-user
+   newgrp docker
+   ```
+2. Levanta MongoDB en un contenedor:
+   ```sh
+   docker run -d --name mongodb -p 27017:27017 -e MONGO_INITDB_ROOT_USERNAME=admin -e MONGO_INITDB_ROOT_PASSWORD=admin mongo:6.0
+   ```
+3. Verifica que esté corriendo:
+   ```sh
+   docker ps
+   ```
+
+### Configuración de la URI de MongoDB en Spring Boot
+
+En `src/main/resources/application.properties` usa:
+```properties
+spring.data.mongodb.uri=mongodb://admin:admin@localhost:27017/btg_fondos
+```
+Esto conecta tu backend a MongoDB en Docker con usuario y contraseña `admin`/`admin` y la base de datos `btg_fondos`.
+
+---
+
 ### 1. Clonar y configurar
 ```bash
 git clone https://github.com/JuanCarlosGuti/Prueba-backend-SETI

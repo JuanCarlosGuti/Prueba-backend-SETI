@@ -2,11 +2,451 @@
 	"info": {
 		"_postman_id": "btg-fondos-api-collection",
 		"name": "BTG Fondos API",
-		"description": "Colección completa de APIs para la plataforma de gestión de fondos de BTG Pactual",
+		"description": "Colección completa de APIs para la plataforma de gestión de fondos de BTG Pactual con sistema de roles (ADMIN/CLIENTE)",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
 		"_exporter_id": "btg-fondos"
 	},
 	"item": [
+		{
+			"name": "Autenticación JWT",
+			"item": [
+				{
+					"name": "Registrar Cliente",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"nombre\": \"Juan Carlos Gutiérrez\",\n    \"email\": \"juancgutierrezh@gmail.com\",\n    \"telefono\": \"+573001234567\",\n    \"password\": \"miContraseña123\",\n    \"preferenciaNotificacion\": \"EMAIL\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/auth/register",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"auth",
+								"register"
+							]
+						},
+						"description": "Registrar un nuevo cliente y obtener token JWT (rol CLIENTE por defecto)"
+					},
+					"response": []
+				},
+				{
+					"name": "Login Cliente",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\": \"juancgutierrezh@gmail.com\",\n    \"password\": \"miContraseña123\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/auth/login",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"auth",
+								"login"
+							]
+						},
+						"description": "Hacer login con email y contraseña para obtener token JWT"
+					},
+					"response": []
+				},
+				{
+					"name": "Login Administrador",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\": \"admin@sistema.com\",\n    \"password\": \"admin123\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/auth/login",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"auth",
+								"login"
+							]
+						},
+						"description": "Login del administrador inicial del sistema"
+					},
+					"response": []
+				},
+				{
+					"name": "Obtener Usuario Actual",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{jwt_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/auth/me",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"auth",
+								"me"
+							]
+						},
+						"description": "Obtener información del usuario autenticado usando JWT token"
+					},
+					"response": []
+				}
+			],
+			"description": "Sistema de autenticación con JWT y roles"
+		},
+		{
+			"name": "Administración (Solo ADMIN)",
+			"item": [
+				{
+					"name": "Listar Todos los Clientes",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{jwt_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/admin/clientes?adminId={{admin_id}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"admin",
+								"clientes"
+							],
+							"query": [
+								{
+									"key": "adminId",
+									"value": "{{admin_id}}",
+									"description": "ID del administrador que realiza la consulta"
+								}
+							]
+						},
+						"description": "Listar todos los clientes del sistema (solo para administradores)"
+					},
+					"response": []
+				},
+				{
+					"name": "Obtener Cliente Específico",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{jwt_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/admin/clientes/{{cliente_id}}?adminId={{admin_id}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"admin",
+								"clientes",
+								"{{cliente_id}}"
+							],
+							"query": [
+								{
+									"key": "adminId",
+									"value": "{{admin_id}}",
+									"description": "ID del administrador que realiza la consulta"
+								}
+							]
+						},
+						"description": "Obtener información de un cliente específico (solo para administradores)"
+					},
+					"response": []
+				},
+				{
+					"name": "Modificar Cliente",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{jwt_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"id\": \"{{cliente_id}}\",\n    \"nombre\": \"Juan Carlos Gutiérrez Modificado\",\n    \"email\": \"juanc.nuevo@gmail.com\",\n    \"telefono\": \"+573009876543\",\n    \"preferenciaNotificacion\": \"SMS\",\n    \"role\": \"CLIENTE\",\n    \"saldo\": 750000\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/admin/clientes?adminId={{admin_id}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"admin",
+								"clientes"
+							],
+							"query": [
+								{
+									"key": "adminId",
+									"value": "{{admin_id}}",
+									"description": "ID del administrador que realiza la modificación"
+								}
+							]
+						},
+						"description": "Modificar datos de un cliente (solo para administradores)"
+					},
+					"response": []
+				},
+				{
+					"name": "Eliminar Cliente",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{jwt_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/admin/clientes/{{cliente_id}}?adminId={{admin_id}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"admin",
+								"clientes",
+								"{{cliente_id}}"
+							],
+							"query": [
+								{
+									"key": "adminId",
+									"value": "{{admin_id}}",
+									"description": "ID del administrador que realiza la eliminación"
+								}
+							]
+						},
+						"description": "Eliminar un cliente del sistema (solo para administradores)"
+					},
+					"response": []
+				},
+				{
+					"name": "Crear Nuevo Administrador",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{jwt_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"nombre\": \"Nuevo Administrador\",\n    \"email\": \"nuevoadmin@btg.com\",\n    \"telefono\": \"+573009876543\",\n    \"password\": \"adminPassword123\",\n    \"preferenciaNotificacion\": \"EMAIL\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/admin/crear-admin?adminId={{admin_id}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"admin",
+								"crear-admin"
+							],
+							"query": [
+								{
+									"key": "adminId",
+									"value": "{{admin_id}}",
+									"description": "ID del administrador que crea el nuevo admin"
+								}
+							]
+						},
+						"description": "Crear un nuevo administrador (solo para administradores existentes)"
+					},
+					"response": []
+				},
+				{
+					"name": "Ver Estadísticas del Sistema",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{jwt_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/admin/estadisticas?adminId={{admin_id}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"admin",
+								"estadisticas"
+							],
+							"query": [
+								{
+									"key": "adminId",
+									"value": "{{admin_id}}",
+									"description": "ID del administrador que consulta las estadísticas"
+								}
+							]
+						},
+						"description": "Obtener estadísticas del sistema (total usuarios, admins, clientes)"
+					},
+					"response": []
+				}
+			],
+			"description": "Endpoints exclusivos para administradores del sistema"
+		},
+		{
+			"name": "Clientes (Gestión Propia)",
+			"item": [
+				{
+					"name": "Crear Cliente",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"nombre\": \"Juan Carlos Gutiérrez\",\n    \"email\": \"juancgutierrezh@gmail.com\",\n    \"telefono\": \"+573001234567\",\n    \"password\": \"miContraseña123\",\n    \"preferenciaNotificacion\": \"EMAIL\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/clientes",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"clientes"
+							]
+						},
+						"description": "Crear un nuevo cliente en el sistema (rol CLIENTE por defecto)"
+					},
+					"response": []
+				},
+				{
+					"name": "Obtener Perfil Propio",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{jwt_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/clientes/{{cliente_id}}?currentUserId={{cliente_id}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"clientes",
+								"{{cliente_id}}"
+							],
+							"query": [
+								{
+									"key": "currentUserId",
+									"value": "{{cliente_id}}",
+									"description": "ID del usuario actual (debe coincidir con el cliente consultado)"
+								}
+							]
+						},
+						"description": "Obtener el perfil propio del cliente (solo puede ver su propio perfil)"
+					},
+					"response": []
+				},
+				{
+					"name": "Actualizar Perfil Propio",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{jwt_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"id\": \"{{cliente_id}}\",\n    \"nombre\": \"Juan Carlos Gutiérrez Actualizado\",\n    \"email\": \"juanc.actualizado@gmail.com\",\n    \"telefono\": \"+573009876543\",\n    \"preferenciaNotificacion\": \"SMS\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/clientes/perfil?userId={{cliente_id}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"clientes",
+								"perfil"
+							],
+							"query": [
+								{
+									"key": "userId",
+									"value": "{{cliente_id}}",
+									"description": "ID del usuario que actualiza su perfil"
+								}
+							]
+						},
+						"description": "Actualizar el perfil propio del cliente (solo puede modificar su propio perfil)"
+					},
+					"response": []
+				}
+			],
+			"description": "Gestión de perfil propio para clientes"
+		},
 		{
 			"name": "Test & Health",
 			"item": [
@@ -52,79 +492,6 @@
 				}
 			],
 			"description": "Endpoints de prueba y verificación de estado"
-		},
-		{
-			"name": "Clientes",
-			"item": [
-				{
-					"name": "Crear Cliente",
-					"request": {
-						"method": "POST",
-						"header": [
-							{
-								"key": "Content-Type",
-								"value": "application/json"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n    \"nombre\": \"Juan Carlos Gutiérrez\",\n    \"email\": \"juancgutierrezh@gmail.com\",\n    \"telefono\": \"+573001234567\",\n    \"preferenciaNotificacion\": \"EMAIL\"\n}"
-						},
-						"url": {
-							"raw": "{{base_url}}/api/clientes",
-							"host": [
-								"{{base_url}}"
-							],
-							"path": [
-								"api",
-								"clientes"
-							]
-						},
-						"description": "Crear un nuevo cliente en el sistema"
-					},
-					"response": []
-				},
-				{
-					"name": "Obtener Cliente por ID",
-					"request": {
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "{{base_url}}/api/clientes/{{cliente_id}}",
-							"host": [
-								"{{base_url}}"
-							],
-							"path": [
-								"api",
-								"clientes",
-								"{{cliente_id}}"
-							]
-						},
-						"description": "Obtener información de un cliente específico por su ID"
-					},
-					"response": []
-				},
-				{
-					"name": "Listar Todos los Clientes",
-					"request": {
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "{{base_url}}/api/clientes",
-							"host": [
-								"{{base_url}}"
-							],
-							"path": [
-								"api",
-								"clientes"
-							]
-						},
-						"description": "Obtener lista de todos los clientes registrados"
-					},
-					"response": []
-				}
-			],
-			"description": "Gestión de clientes del sistema"
 		},
 		{
 			"name": "Fondos",
@@ -208,7 +575,7 @@
 				{
 					"name": "Cancelar Suscripción",
 					"request": {
-						"method": "DELETE",
+						"method": "POST",
 						"header": [],
 						"url": {
 							"raw": "{{base_url}}/api/fondos/cancelar?clienteId={{cliente_id}}&fondoId={{fondo_id}}",
@@ -243,14 +610,14 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{base_url}}/api/fondos/transacciones/{{cliente_id}}",
+							"raw": "{{base_url}}/api/fondos/historial/{{cliente_id}}",
 							"host": [
 								"{{base_url}}"
 							],
 							"path": [
 								"api",
 								"fondos",
-								"transacciones",
+								"historial",
 								"{{cliente_id}}"
 							]
 						},
@@ -364,10 +731,22 @@
 			"description": "ID de ejemplo de un cliente"
 		},
 		{
+			"key": "admin_id",
+			"value": "64f8a1b2c3d4e5f6a7b8c9d2",
+			"type": "string",
+			"description": "ID de ejemplo de un administrador"
+		},
+		{
 			"key": "fondo_id",
 			"value": "64f8a1b2c3d4e5f6a7b8c9d1",
 			"type": "string",
 			"description": "ID de ejemplo de un fondo"
+		},
+		{
+			"key": "jwt_token",
+			"value": "",
+			"type": "string",
+			"description": "Token JWT para autenticación (se obtiene al hacer login)"
 		},
 		{
 			"key": "username",

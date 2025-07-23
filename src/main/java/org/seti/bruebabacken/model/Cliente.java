@@ -16,9 +16,11 @@ public class Cliente {
     private String nombre;
     private String email;
     private String telefono;
+    private String password; // Contraseña encriptada
     private String preferenciaNotificacion;
     private BigDecimal saldo = new BigDecimal("500000");
     private List<Suscripcion> suscripciones;
     private List<Transaccion> transacciones;
+    private Role role = Role.CLIENTE; // Rol por defecto
 }
 

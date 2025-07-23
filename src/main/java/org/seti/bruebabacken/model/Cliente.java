@@ -16,7 +16,7 @@ public class Cliente {
     private String nombre;
     private String email;
     private String telefono;
-    private String preferenciaNotificacion; // "EMAIL" o "SMS"
+    private String preferenciaNotificacion;
     private BigDecimal saldo = new BigDecimal("500000");
     private List<Suscripcion> suscripciones;
     private List<Transaccion> transacciones;
